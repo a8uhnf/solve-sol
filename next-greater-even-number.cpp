@@ -25,11 +25,66 @@ long long convert(string s) {
     return ret;
 }
 
+string str;
+
+string generateString(vector<int>v, int i, int mn, int mx) {
+    int b1 = false, b2 = false;
+    for(int j = v.size()-1; j>=0; j--) {
+            if (v[j]%2 == 0 && mx == v[j]) {
+                str[str.size()-1] = v[j]+'0';
+                v[j] = -1;
+                b1 = true;
+            }
+            if(b1)break;
+    }
+    for(int j = 0; j < v.size(); j++) {
+        if(v[j] < 0)continue;
+
+        if (mn <= v[j]) {
+            str[i] = v[j]+'0';
+            v[j] = -1;
+            b2 = true;
+        }
+        if(b2)break;
+    }
+
+    int id = i+1;
+    for(int j = 0; j<v.size(); j++) {
+        if(v[j] >= 0) {
+            str[id++] = v[j]+'0';
+        }
+
+        if(id == str.size())break;
+
+    }
+    return str;
+}
+
+bool validataionString(string s1, string s2) {
+    if(convert(s1) < convert(s2)) return false;
+    map<int, int>mp;
+    for(int i = 0; i<s2.size(); i++) {
+        mp[s2[i]-'0']++;
+    }
+    for(int i = 0; i<s1.size(); i++) {
+        mp[s1[i]-'0']--;
+    }
+
+    map<int, int>::iterator it;
+
+    for(it = mp.begin(); it != mp.end(); it++) {
+        if(it->second != 0)return false;
+    }
+    return true;
+}
+
 int main() {
     int ks;
     cin>>ks;
     map<int, int>mp;
     while(ks--) {
+        string ans;
+        bool dicision = false;
         mp.clear();
         string tmp;
         string s;
@@ -60,96 +115,46 @@ int main() {
             }
 
             if(cnt == 0 || cntM == 0)continue;
-            cout<<"----"<<i<<" "<<mn<<" "<<mx<<" "<<cnt<<endl;
+            // cout<<"----"<<i<<" "<<mn<<" "<<mx<<" "<<cnt<<endl;
             if(mn == mx && cnt == 1 && cntM == 1)continue;
-            cout<<"hello"<<endl;
+            // cout<<"hello"<<endl;
 
             // cout<<s[i]<<endl;
-            cout<<"----"<<i<<" "<<mn<<" "<<mx<<" "<<cnt<<endl;
-
-            int b1 = false, b2 = false;
+            // cout<<"----"<<i<<" "<<mn<<" "<<mx<<" "<<cnt<<endl;
+            sort(v.begin(), v.end());
             for(int j = v.size()-1; j>=0; j--) {
-                    if(mx == mn && mn == v[j]) {
-                        if (j-1 >= 0 && mx == v[j-1] && mn == v[j]) {
-                            s[i] = v[j]+'0';
-                            s[s.size()-1] = v[j]+'0';
-                            v[j] = -1;
-                            v[j-1] = -1;
-                            break;
-                        } else if(cnt > 1) {
-                            s[i] = v[j]+'0';
-                            v[j] = -1;
-                            for(int k = v.size()-1; k>=0; k--) {
-                                if(v[k]%2 == 0 && mx != v[k]) {
-                                    // cout<<"hello"<<endl;
-                                    s[s.size()-1] = v[k]+'0';
-                                    v[k] = -1;
-                                    break;
-                                }
-                            }
-                        } else if(cntM > 1) {
-                            if (cnt == 1) {
-                                s[s.size()-1] = mx;
-                                int p = mp[mx];
-                                cout<<mx<<" - "<<v[p]<<endl;
-                                v[p] = -1;
+                if(v[j]%2 == 0) {
+                    str = s;
+                    for(int k = v.size()-1; k >= 0; k--) {
+                        if(j == k) continue;
+                        if(mn > v[k])continue;
 
-                                for(int k = 0; k<v.size(); k++) {
-                                    if(v[k] < 0)continue;
-                                    if(s[i]-'0' < v[k]) {
-                                        // cout<<"hello"<<endl;
-                                        s[i] = v[k]+'0';
-                                        v[k] = -1;
-                                        break;
-                                    }
-                                }
-                            } else if(cntM == 1) {
-                                s[i] = mn;
-                                int p = mp[mn];
-                                v[p] = -1;
-                                for(int k = v.size()-1; k>=0; k--) {
-                                    if(v[k] < 0)continue;
-                                    if(v[k]%2 == 0) {
-                                        // cout<<"hello"<<endl;
-                                        s[i] = v[k]+'0';
-                                        v[k] = -1;
-                                        break;
-                                    }
-                                }
+                        string tmp1 = generateString(v, i, v[k], v[j]);
+                        // cout<<"-------------"<<endl;
+                        // cout<<"-------------"<<endl;
+                        // cout<<tmp1<<endl;
+                        if(validataionString(tmp1, s)) {
+                            //cout<<tmp1<<endl;
+                            dicision = true;
+                            //break;
+                            if(ans == "") {
+                                ans = tmp1;
+                            } else if(ans[i]-'0' > tmp1[i]-'0') {
+                                ans = tmp1;
                             }
                         }
-                        b1 = true;
-                        b2 = true;
-                    } else if(v[j]%2 == 0 && mx == v[j] && !b1) {
-                        s[s.size()-1] = v[j]+'0';
-                        v[j] = -1;
-                        b1 = true;
-                    } else if (mn == v[j] && !b2) {
-                        s[i] = v[j]+'0';
-                        v[j] = -1;
-                        b2 = true;
                     }
-
-                    if(b1 && b2)break;
-            }
-            string tmp;
-
-            int id = i+1;
-            sort(v.begin(), v.end());
-            for(int j = 0; j<v.size(); j++) {
-
-                if(v[j] >= 0) {
-                    s[id++] = v[j]+'0';
+                    // if(dicision)break;
                 }
-
-                if(id == s.size())break;
-
             }
-            break;
+            if(dicision)break;
         }
-        if(tmp == s)cout<<"-1"<<endl;
-        else cout<<s<<endl;
+        if(!dicision)cout<<"-1"<<endl;
+        else cout<<ans<<endl;
     }
 
     return 0;
 }
+
+
+// 2 3810 866851995210
